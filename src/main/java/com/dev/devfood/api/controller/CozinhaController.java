@@ -17,7 +17,7 @@ public class CozinhaController {
 	@Autowired
 	private CozinhaRepository repository;
 	
-	@GetMapping
+	@GetMapping(produces = "application/xml")
 	public List<Cozinha> list() {
 		return repository.list();
 	}
