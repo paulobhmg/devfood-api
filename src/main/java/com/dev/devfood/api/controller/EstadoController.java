@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dev.devfood.api.model.EstadoXmlWrapper;
 import com.dev.devfood.domain.model.Estado;
 import com.dev.devfood.domain.repository.EstadoRepository;
 
 @RestController
-@RequestMapping(value = "/estados", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping("/estados")
 public class EstadoController {
 	
 	@Autowired
@@ -22,6 +23,11 @@ public class EstadoController {
 	@GetMapping
 	public List<Estado> list(){
 		return repository.list();		
+	}
+	
+	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+	public EstadoXmlWrapper getWrapper() {
+		return new EstadoXmlWrapper(list());
 	}
 	
 	@GetMapping("/{id}")
