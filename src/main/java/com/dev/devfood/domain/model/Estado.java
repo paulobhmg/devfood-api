@@ -18,12 +18,20 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @Entity
-public class Cozinha {
+public class Estado {
 	
 	@Id @EqualsAndHashCode.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column
-	private String descricao;
+	private String nome;
+	
+	@Column
+	private String sigla;
+
+	public Estado(String nome, String sigla) {
+		this.nome = nome;
+		this.sigla = sigla;
+	}
 }
