@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,5 +37,10 @@ public class EstadoController {
 	public ResponseEntity<Estado> findById(@PathVariable Long id) {
 		Estado estado = repository.findById(id);
 		return estado != null ? ResponseEntity.ok(estado) : ResponseEntity.notFound().build();
+	}
+	
+	@PostMapping
+	public ResponseEntity<Estado> save(@RequestBody Estado estado){
+		return ResponseEntity.ok(repository.save(estado));
 	}
 }
