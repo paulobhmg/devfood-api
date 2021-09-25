@@ -33,6 +33,7 @@ public class CozinhaController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cozinha> findById(@PathVariable Long id) {
-		return ResponseEntity.ok(repository.findById(id));
+		Cozinha cozinha = repository.findById(id);
+		return cozinha != null ? ResponseEntity.ok(cozinha) : ResponseEntity.notFound().build();
 	}
 }

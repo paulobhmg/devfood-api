@@ -43,6 +43,7 @@ public class RestauranteController {
 				.build();
 		*/
 		
-		return ResponseEntity.ok(repository.findById(id));
+		Restaurante restaurante = repository.findById(id);
+		return restaurante != null ? ResponseEntity.ok(restaurante) : ResponseEntity.notFound().build();
 	}
 }
