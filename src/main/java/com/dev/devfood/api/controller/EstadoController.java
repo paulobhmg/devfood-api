@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,17 +22,17 @@ public class EstadoController {
 	private EstadoRepository repository;
 	
 	@GetMapping
-	public List<Estado> list(){
-		return repository.list();		
+	public ResponseEntity<List<Estado>> list(){
+		return ResponseEntity.ok(repository.list());		
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public EstadoXmlWrapper getWrapper() {
-		return new EstadoXmlWrapper(list());
+	public ResponseEntity<EstadoXmlWrapper> getWrapper() {
+		return ResponseEntity.ok(new EstadoXmlWrapper(repository.list()));
 	}
 	
 	@GetMapping("/{id}")
-	public Estado findById(@PathVariable Long id) {
-		return repository.findById(id);
+	public ResponseEntity<Estado> findById(@PathVariable Long id) {
+		return ResponseEntity.ok(repository.findById(id));
 	}
 }

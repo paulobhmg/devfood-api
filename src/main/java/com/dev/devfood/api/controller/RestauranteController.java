@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,17 +22,27 @@ public class RestauranteController {
 	private RestauranteRepository repository;
 	
 	@GetMapping
-	public List<Restaurante> list(){
-		return repository.list();
+	public ResponseEntity<List<Restaurante>> list(){
+		return ResponseEntity.ok(repository.list());
 	}
-	
+
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public RestauranteXmlWrapper getWrapper() {
-		return new RestauranteXmlWrapper(list());
+	public ResponseEntity<RestauranteXmlWrapper> getWrapper() {
+		return ResponseEntity.ok(new RestauranteXmlWrapper(repository.list()));
 	}
 		
 	@GetMapping("/{id}")
-	public Restaurante findById(@PathVariable Long id) {
-		return repository.findById(id);
+	public ResponseEntity<Restaurante> findById(@PathVariable Long id) {
+		/* 
+			HttpHeaders headers = new HttpHeaders();
+			headers.add(HttpHeaders.LOCATION, "http://api.devfood:8080/cozinhas");
+		
+			return ResponseEntity
+				.status(HttpStatus.MOVED_PERMANENTLY)
+				.headers(headers)
+				.build();
+		*/
+		
+		return ResponseEntity.ok(repository.findById(id));
 	}
 }

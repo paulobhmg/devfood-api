@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,17 +22,17 @@ public class CozinhaController {
 	private CozinhaRepository repository;
 	
 	@GetMapping()
-	public List<Cozinha> list() {
-		return repository.list();
+	public ResponseEntity<List<Cozinha>> list() {
+		return ResponseEntity.ok(repository.list());
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public CozinhaXmlWrapper getXml() {
-		return new CozinhaXmlWrapper(list());
+	public ResponseEntity<CozinhaXmlWrapper> getXml() {
+		return ResponseEntity.ok(new CozinhaXmlWrapper(repository.list()));
 	}
 	
 	@GetMapping("/{id}")
-	public Cozinha findById(@PathVariable Long id) {
-		return repository.findById(id);
+	public ResponseEntity<Cozinha> findById(@PathVariable Long id) {
+		return ResponseEntity.ok(repository.findById(id));
 	}
 }
