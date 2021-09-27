@@ -19,52 +19,52 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dev.devfood.api.model.CozinhaXmlWrapper;
 import com.dev.devfood.domain.model.Cozinha;
-import com.dev.devfood.domain.repository.CozinhaRepository;
+import com.dev.devfood.domain.service.CadastroCozinhaService;
 
 @RestController
 @RequestMapping("/cozinhas")
 public class CozinhaController {
 	
 	@Autowired
-	private CozinhaRepository repository;
+	private CadastroCozinhaService service;
 	
 	@GetMapping()
 	public ResponseEntity<List<Cozinha>> list() {
-		return ResponseEntity.ok(repository.list());
+		return ResponseEntity.ok(service.list());
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<CozinhaXmlWrapper> getXml() {
-		return ResponseEntity.ok(new CozinhaXmlWrapper(repository.list()));
+		return ResponseEntity.ok(new CozinhaXmlWrapper(service.list()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cozinha> findById(@PathVariable Long id) {
-		Cozinha cozinha = repository.findById(id);
+		Cozinha cozinha = service.findById(id);
 		return cozinha != null ? ResponseEntity.ok(cozinha) : ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping
 	public ResponseEntity<Cozinha> save(@RequestBody Cozinha cozinha){
-		return ResponseEntity.ok(repository.save(cozinha));
+		return ResponseEntity.ok(service.save(cozinha));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Cozinha> update(@PathVariable Long id, @RequestBody Cozinha cozinha){
-		Cozinha cozinhaAtual = repository.findById(id);
+		Cozinha cozinhaAtual = service.findById(id);
 		if(cozinhaAtual != null) {
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			return ResponseEntity.ok(repository.save(cozinhaAtual));
+			return ResponseEntity.ok(service.save(cozinhaAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Cozinha> delete(@PathVariable Long id){
-		Cozinha cozinha = repository.findById(id);
+		Cozinha cozinha = service.findById(id);
 		if(cozinha != null) {
 			try {
-				repository.delete(cozinha);
+				service.delete(cozinha);
 				return ResponseEntity.noContent().build();
 			}catch(DataIntegrityViolationException e) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).build();
