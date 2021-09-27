@@ -33,8 +33,12 @@ public class Cidade {
 	@ManyToOne
 	private Estado estado;
 
-	public Cidade(String nome, Estado estado) {
+	public Cidade(String nome) {
 		this.nome = nome;
-		this.estado = estado;
 	}
+	
+//	public Cidade(String nome, Estado estado) {
+//		this(nome);
+//		this.estado = estado;
+//	}
 }
