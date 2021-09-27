@@ -63,12 +63,8 @@ public class CidadeController {
 	public ResponseEntity<Cidade> delete(@PathVariable Long id){
 		Cidade cidade = repository.findById(id);
 		if(cidade != null) {
-			try {
-				repository.delete(cidade);
-				return ResponseEntity.noContent().build();
-			}catch(DataIntegrityViolationException e) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).build();
-			}
+			repository.delete(cidade);
+			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
 	}

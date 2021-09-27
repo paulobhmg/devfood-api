@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -61,8 +63,12 @@ public class EstadoController {
 	public ResponseEntity<Estado> delete(@PathVariable Long id){
 		Estado estado = repository.findById(id);
 		if(estado != null) {
-			repository.delete(estado);
-			return ResponseEntity.noContent().build();
+			try {
+				repository.delete(estado);
+				return ResponseEntity.noContent().build();
+			}catch(DataIntegrityViolationException e) {
+				return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			}
 		}
 		return ResponseEntity.notFound().build();
 	}
