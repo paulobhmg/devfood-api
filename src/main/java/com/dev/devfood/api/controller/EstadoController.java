@@ -30,41 +30,41 @@ public class EstadoController {
 	
 	@GetMapping
 	public ResponseEntity<List<Estado>> list(){
-		return ResponseEntity.ok(repository.listar());		
+		return ResponseEntity.ok(repository.list());		
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<EstadoXmlWrapper> getWrapper() {
-		return ResponseEntity.ok(new EstadoXmlWrapper(repository.listar()));
+		return ResponseEntity.ok(new EstadoXmlWrapper(repository.list()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Estado> findById(@PathVariable Long id) {
-		Estado estado = repository.buscarPorId(id);
+		Estado estado = repository.findById(id);
 		return estado != null ? ResponseEntity.ok(estado) : ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping
 	public ResponseEntity<Estado> save(@RequestBody Estado estado){
-		return ResponseEntity.ok(repository.salvar(estado));
+		return ResponseEntity.ok(repository.save(estado));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Estado> update(@PathVariable Long id, @RequestBody Estado estado){
-		Estado estadoAtual = repository.buscarPorId(id);
+		Estado estadoAtual = repository.findById(id);
 		if(estadoAtual != null) {
 			BeanUtils.copyProperties(estado, estadoAtual, "id");
-			return ResponseEntity.ok(repository.salvar(estadoAtual));
+			return ResponseEntity.ok(repository.save(estadoAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Estado> delete(@PathVariable Long id){
-		Estado estado = repository.buscarPorId(id);
+		Estado estado = repository.findById(id);
 		if(estado != null) {
 			try {
-				repository.deletar(id);
+				repository.delete(estado.getId());
 				return ResponseEntity.noContent().build();
 			}catch(DataIntegrityViolationException e) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).build();

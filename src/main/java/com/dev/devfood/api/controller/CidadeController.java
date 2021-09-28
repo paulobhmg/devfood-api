@@ -29,40 +29,40 @@ public class CidadeController {
 	
 	@GetMapping
 	public ResponseEntity<List<Cidade>> list() {
-		return ResponseEntity.ok(repository.listar());
+		return ResponseEntity.ok(repository.list());
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<CidadeXmlWrapper> getWrapper(){
-		return ResponseEntity.ok(new CidadeXmlWrapper(repository.listar()));
+		return ResponseEntity.ok(new CidadeXmlWrapper(repository.list()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cidade> findById(@PathVariable Long id){
-		Cidade cidade = repository.buscarPorId(id);
+		Cidade cidade = repository.findById(id);
 		return cidade != null ? ResponseEntity.ok(cidade) : ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping
 	public ResponseEntity<Cidade> save(@RequestBody Cidade cidade){
-		return ResponseEntity.status(HttpStatus.CREATED).body(repository.salvar(cidade));
+		return ResponseEntity.status(HttpStatus.CREATED).body(repository.save(cidade));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Cidade> update(@PathVariable Long id, @RequestBody Cidade cidade){
-		Cidade cidadeAtual = repository.buscarPorId(id);
+		Cidade cidadeAtual = repository.findById(id);
 		if(cidadeAtual != null) {
 			BeanUtils.copyProperties(cidade, cidadeAtual, "id", "estado");
-			return ResponseEntity.ok(repository.salvar(cidadeAtual));
+			return ResponseEntity.ok(repository.save(cidadeAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Cidade> delete(@PathVariable Long id){
-		Cidade cidade = repository.buscarPorId(id);
+		Cidade cidade = repository.findById(id);
 		if(cidade != null) {
-			repository.deletar(id);
+			repository.delete(cidade.getId());
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();

@@ -19,24 +19,30 @@ public class CidadeRepositoryImpl implements CidadeRepository{
 	
 	@Transactional
 	@Override
-	public Cidade salvar(Cidade cidade) {
+	public Cidade save(Cidade cidade) {
 		return manager.merge(cidade);
 	}
 
 	@Override
-	public Cidade buscarPorId(Long id) {
+	public Cidade findById(Long id) {
 		return manager.find(Cidade.class, id);
 	}
 
 	@Override
-	public List<Cidade> listar() {
+	public List<Cidade> list() {
 		return manager.createQuery("from Cidade", Cidade.class).getResultList();
 	}
 
 	@Transactional
 	@Override
-	public void deletar(Long id) {
-		manager.remove(buscarPorId(id));
+	public void delete(Long id) {
+		manager.remove(findById(id));
+	}
+
+	@Override
+	public void checkIfResourceIsNull(Cidade resource) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

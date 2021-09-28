@@ -19,23 +19,29 @@ public class EstadoRepositoryImpl implements EstadoRepository{
 	
 	@Transactional
 	@Override
-	public Estado salvar(Estado estado) {
+	public Estado save(Estado estado) {
 		return manager.merge(estado);
 	}
 
 	@Override
-	public Estado buscarPorId(Long id) {
+	public Estado findById(Long id) {
 		return manager.find(Estado.class, id);
 	}
 
 	@Override
-	public List<Estado> listar() {
+	public List<Estado> list() {
 		return manager.createQuery("from Estado", Estado.class).getResultList();
 	}
 
 	@Transactional
 	@Override
-	public void deletar(Long id) {
-		manager.remove(buscarPorId(id));
+	public void delete(Long id) {
+		manager.remove(findById(id));
+	}
+
+	@Override
+	public void checkIfResourceIsNull(Estado resource) {
+		// TODO Auto-generated method stub
+		
 	}
 }
