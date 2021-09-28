@@ -64,7 +64,7 @@ public class EstadoController {
 		Estado estado = repository.buscarPorId(id);
 		if(estado != null) {
 			try {
-				repository.apagar(id);
+				repository.deletar(id);
 				return ResponseEntity.noContent().build();
 			}catch(DataIntegrityViolationException e) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).build();

@@ -14,19 +14,19 @@ public class CadastroCozinhaService {
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
 	
-	public Cozinha save(Cozinha cozinha) {
+	public Cozinha salvar(Cozinha cozinha) {
 		return cozinhaRepository.salvar(cozinha);
 	}
 	
-	public Cozinha findById(Long id) {
+	public Cozinha buscarPorId(Long id) {
 		return cozinhaRepository.buscarPorId(id);
 	}
 	
-	public List<Cozinha> list(){
+	public List<Cozinha> listar(){
 		return cozinhaRepository.listar();
 	}
 	
-	public void delete(Long id) {
-		cozinhaRepository.apagar(id);
+	public void deletar(Long id) {
+		cozinhaRepository.deletar(id);
 	}
 }

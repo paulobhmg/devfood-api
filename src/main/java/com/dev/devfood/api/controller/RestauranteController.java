@@ -71,7 +71,7 @@ public class RestauranteController {
 	public ResponseEntity<Restaurante> delete(@PathVariable Long id){
 		Restaurante restaurante = repository.buscarPorId(id);
 		if(restaurante != null) {
-			repository.apagar(id);
+			repository.deletar(id);
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();

@@ -62,7 +62,7 @@ public class CidadeController {
 	public ResponseEntity<Cidade> delete(@PathVariable Long id){
 		Cidade cidade = repository.buscarPorId(id);
 		if(cidade != null) {
-			repository.apagar(id);
+			repository.deletar(id);
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();

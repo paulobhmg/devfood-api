@@ -30,41 +30,41 @@ public class CozinhaController {
 	
 	@GetMapping()
 	public ResponseEntity<List<Cozinha>> list() {
-		return ResponseEntity.ok(service.list());
+		return ResponseEntity.ok(service.listar());
 	}
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<CozinhaXmlWrapper> getXml() {
-		return ResponseEntity.ok(new CozinhaXmlWrapper(service.list()));
+		return ResponseEntity.ok(new CozinhaXmlWrapper(service.listar()));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Cozinha> findById(@PathVariable Long id) {
-		Cozinha cozinha = service.findById(id);
+		Cozinha cozinha = service.buscarPorId(id);
 		return cozinha != null ? ResponseEntity.ok(cozinha) : ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping
 	public ResponseEntity<Cozinha> save(@RequestBody Cozinha cozinha){
-		return ResponseEntity.ok(service.save(cozinha));
+		return ResponseEntity.ok(service.salvar(cozinha));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Cozinha> update(@PathVariable Long id, @RequestBody Cozinha cozinha){
-		Cozinha cozinhaAtual = service.findById(id);
+		Cozinha cozinhaAtual = service.buscarPorId(id);
 		if(cozinhaAtual != null) {
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			return ResponseEntity.ok(service.save(cozinhaAtual));
+			return ResponseEntity.ok(service.salvar(cozinhaAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Cozinha> delete(@PathVariable Long id){
-		Cozinha cozinha = service.findById(id);
+		Cozinha cozinha = service.buscarPorId(id);
 		if(cozinha != null) {
 			try {
-				service.delete(id);
+				service.deletar(id);
 				return ResponseEntity.noContent().build();
 			}catch(DataIntegrityViolationException e) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).build();

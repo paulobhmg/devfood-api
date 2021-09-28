@@ -6,5 +6,5 @@ public interface Repository<T> {
 	T salvar(T t);
 	T buscarPorId(Long id);
 	List<T> listar();
-	void apagar(Long id);
+	void deletar(Long id);
 }
