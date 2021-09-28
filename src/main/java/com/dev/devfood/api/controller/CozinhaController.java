@@ -64,7 +64,7 @@ public class CozinhaController {
 		Cozinha cozinha = service.findById(id);
 		if(cozinha != null) {
 			try {
-				service.delete(cozinha);
+				service.delete(id);
 				return ResponseEntity.noContent().build();
 			}catch(DataIntegrityViolationException e) {
 				return ResponseEntity.status(HttpStatus.CONFLICT).build();

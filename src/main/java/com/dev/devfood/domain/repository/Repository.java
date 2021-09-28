@@ -6,5 +6,5 @@ public interface Repository<T> {
 	T save(T t);
 	T findById(Long id);
 	List<T> list();
-	void delete(T t);
+	void delete(Long id);
 }

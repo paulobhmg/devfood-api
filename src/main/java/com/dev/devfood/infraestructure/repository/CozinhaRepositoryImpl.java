@@ -35,8 +35,8 @@ public class CozinhaRepositoryImpl implements CozinhaRepository{
 
 	@Transactional
 	@Override
-	public void delete(Cozinha cozinha) {
-		manager.remove(findById(cozinha.getId()));
+	public void delete(Long id) {
+		manager.remove(findById(id));
 	}
 
 }

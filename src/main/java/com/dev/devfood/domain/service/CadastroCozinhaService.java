@@ -26,7 +26,7 @@ public class CadastroCozinhaService {
 		return cozinhaRepository.list();
 	}
 	
-	public void delete(Cozinha cozinha) {
-		cozinhaRepository.delete(cozinha);
+	public void delete(Long id) {
+		cozinhaRepository.delete(id);
 	}
 }
