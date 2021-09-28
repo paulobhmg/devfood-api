@@ -19,24 +19,24 @@ public class CozinhaRepositoryImpl implements CozinhaRepository{
 		
 	@Transactional
 	@Override
-	public Cozinha save(Cozinha cozinha) {
+	public Cozinha salvar(Cozinha cozinha) {
 		return manager.merge(cozinha) ;
 	}
 
 	@Override
-	public Cozinha findById(Long id) {
+	public Cozinha buscarPorId(Long id) {
 		return manager.find(Cozinha.class, id);
 	}
 
 	@Override
-	public List<Cozinha> list() {
+	public List<Cozinha> listar() {
 		return manager.createQuery("from Cozinha", Cozinha.class).getResultList();
 	}
 
 	@Transactional
 	@Override
-	public void delete(Long id) {
-		manager.remove(findById(id));
+	public void apagar(Long id) {
+		manager.remove(buscarPorId(id));
 	}
 
 }

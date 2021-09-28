@@ -19,23 +19,23 @@ public class RestauranteRepositoryImpl implements RestauranteRepository{
 	
 	@Transactional
 	@Override
-	public Restaurante save(Restaurante restaurante) {
+	public Restaurante salvar(Restaurante restaurante) {
 		return manager.merge(restaurante);
 	}
 
 	@Override
-	public Restaurante findById(Long id) {
+	public Restaurante buscarPorId(Long id) {
 		return manager.find(Restaurante.class, id);
 	}
 
 	@Override
-	public List<Restaurante> list() {
+	public List<Restaurante> listar() {
 		return manager.createQuery("from Restaurante", Restaurante.class).getResultList();
 	}
 
 	@Transactional
 	@Override
-	public void delete(Long id) {
-		manager.remove(findById(id));
+	public void apagar(Long id) {
+		manager.remove(buscarPorId(id));
 	}
 }

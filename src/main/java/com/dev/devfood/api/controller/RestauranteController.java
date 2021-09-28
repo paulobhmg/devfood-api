@@ -28,12 +28,12 @@ public class RestauranteController {
 	
 	@GetMapping
 	public ResponseEntity<List<Restaurante>> list(){
-		return ResponseEntity.ok(repository.list());
+		return ResponseEntity.ok(repository.listar());
 	}
 
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<RestauranteXmlWrapper> getWrapper() {
-		return ResponseEntity.ok(new RestauranteXmlWrapper(repository.list()));
+		return ResponseEntity.ok(new RestauranteXmlWrapper(repository.listar()));
 	}
 		
 	@GetMapping("/{id}")
@@ -48,30 +48,30 @@ public class RestauranteController {
 				.build();
 		*/
 		
-		Restaurante restaurante = repository.findById(id);
+		Restaurante restaurante = repository.buscarPorId(id);
 		return restaurante != null ? ResponseEntity.ok(restaurante) : ResponseEntity.notFound().build();
 	}
 	
 	@PostMapping
 	public ResponseEntity<Restaurante> save(@RequestBody Restaurante restaurante) {
-		return ResponseEntity.ok(repository.save(restaurante));
+		return ResponseEntity.ok(repository.salvar(restaurante));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Restaurante> update(@PathVariable Long id, @RequestBody Restaurante restaurante){
-		Restaurante restauranteAtual = repository.findById(id);
+		Restaurante restauranteAtual = repository.buscarPorId(id);
 		if(restauranteAtual != null) {
 			BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "cozinha");
-			return ResponseEntity.ok(repository.save(restauranteAtual));
+			return ResponseEntity.ok(repository.salvar(restauranteAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Restaurante> delete(@PathVariable Long id){
-		Restaurante restaurante = repository.findById(id);
+		Restaurante restaurante = repository.buscarPorId(id);
 		if(restaurante != null) {
-			repository.delete(id);
+			repository.apagar(id);
 			return ResponseEntity.noContent().build();
 		}
 		return ResponseEntity.notFound().build();
