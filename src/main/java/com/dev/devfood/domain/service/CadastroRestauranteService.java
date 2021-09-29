@@ -31,7 +31,7 @@ public class CadastroRestauranteService {
 		try {
 			return restauranteRepository.save(restaurante);
 		}catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(String.format("Cozinha de código '%d' não encontrada.", cozinha.getId()));
+			throw new ResourceNotFoundException(String.format("Cozinha de código '%d' não existe.", cozinha.getId()));
 		}
 	}
 	
@@ -39,7 +39,7 @@ public class CadastroRestauranteService {
 		try {
 			return restauranteRepository.findById(id);
 		}catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(String.format("Restaurante de código '%d' não encontrado.", id));
+			throw new ResourceNotFoundException(String.format("Restaurante de código '%d' não existe.", id));
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class CadastroRestauranteService {
 		try {
 			restauranteRepository.delete(id);
 		}catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(String.format("Restaurante de código '%d' não encontrado.", id));
+			throw new ResourceNotFoundException(String.format("Restaurante de código '%d' não existe.", id));
 		}catch(DataIntegrityViolationException e) {
 			throw new ResourceInUseException(String.format("Restaurante de código '%d' está em uso e não pode ser removido.", id));
 		}

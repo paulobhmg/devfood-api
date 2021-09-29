@@ -40,6 +40,18 @@ public class RestauranteController {
 			restaurante = service.save(restaurante);
 			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
 		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+		}
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurante restaurante){
+		Restaurante restauranteAtual = null; 
+		try {
+			restauranteAtual = service.findByIdOrThrowsResourceNotFoundException(id);
+			BeanUtils.copyProperties(restaurante, restauranteAtual, "id");
+			return ResponseEntity.ok(service.save(restauranteAtual));
+		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
@@ -56,16 +68,6 @@ public class RestauranteController {
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
-	}
-	
-	@PutMapping("/{id}")
-	public ResponseEntity<Restaurante> update(@PathVariable Long id, @RequestBody Restaurante restaurante){
-		Restaurante restauranteAtual = service.findByIdOrThrowsResourceNotFoundException(id);
-		if(restauranteAtual != null) {
-			BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "cozinha");
-			return ResponseEntity.ok(service.save(restauranteAtual));
-		}
-		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")

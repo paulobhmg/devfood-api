@@ -30,7 +30,7 @@ public class CadastroCozinhaService {
 		try {
 			return cozinhaRepository.findById(id);
 		}catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(String.format("Cozinha de código '%d' não encontrada.", id));
+			throw new ResourceNotFoundException(String.format("Cozinha de código '%d' não existe.", id));
 		}
 	}
 
@@ -38,7 +38,7 @@ public class CadastroCozinhaService {
 		try {
 			cozinhaRepository.delete(id);
 		}catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException(String.format("Cozinha de ID '%d' não encontrada.", id));
+			throw new ResourceNotFoundException(String.format("Cozinha de ID '%d' não existe.", id));
 		}catch(DataIntegrityViolationException e) {
 			throw new ResourceInUseException(String.format("Cozinha de ID '%d' está em uso e não pode ser removida.", id));
 		}
