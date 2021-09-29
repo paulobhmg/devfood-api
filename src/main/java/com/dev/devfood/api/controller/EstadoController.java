@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,58 +17,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dev.devfood.api.model.EstadoXmlWrapper;
+import com.dev.devfood.domain.exception.ResourceInUseException;
+import com.dev.devfood.domain.exception.ResourceNotFoundException;
 import com.dev.devfood.domain.model.Estado;
-import com.dev.devfood.domain.repository.EstadoRepository;
+import com.dev.devfood.domain.service.CadastroEstadoService;
 
 @RestController
 @RequestMapping("/estados")
 public class EstadoController {
 	
 	@Autowired
-	private EstadoRepository repository;
-	
-	@GetMapping
-	public ResponseEntity<List<Estado>> list(){
-		return ResponseEntity.ok(repository.list());		
-	}
+	private CadastroEstadoService cadastroEstadoService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<EstadoXmlWrapper> getWrapper() {
-		return ResponseEntity.ok(new EstadoXmlWrapper(repository.list()));
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<Estado> findById(@PathVariable Long id) {
-		Estado estado = repository.findById(id);
-		return estado != null ? ResponseEntity.ok(estado) : ResponseEntity.notFound().build();
+		return ResponseEntity.ok(new EstadoXmlWrapper(cadastroEstadoService.list()));
 	}
 	
 	@PostMapping
 	public ResponseEntity<Estado> save(@RequestBody Estado estado){
-		return ResponseEntity.ok(repository.save(estado));
+		return ResponseEntity.ok(cadastroEstadoService.save(estado));
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Estado>> list(){
+		return ResponseEntity.ok(cadastroEstadoService.list());		
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<?> findById(@PathVariable Long id) {
+		try {
+			return ResponseEntity.ok(cadastroEstadoService.findByIdOrThrowsResourceNotFoundException(id));
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Estado> update(@PathVariable Long id, @RequestBody Estado estado){
-		Estado estadoAtual = repository.findById(id);
-		if(estadoAtual != null) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Estado estado){
+		try{
+			Estado estadoAtual = cadastroEstadoService.findByIdOrThrowsResourceNotFoundException(id);
 			BeanUtils.copyProperties(estado, estadoAtual, "id");
-			return ResponseEntity.ok(repository.save(estadoAtual));
+			return ResponseEntity.ok(cadastroEstadoService.save(estadoAtual));
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
-		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Estado> delete(@PathVariable Long id){
-		Estado estado = repository.findById(id);
-		if(estado != null) {
-			try {
-				repository.delete(estado.getId());
-				return ResponseEntity.noContent().build();
-			}catch(DataIntegrityViolationException e) {
-				return ResponseEntity.status(HttpStatus.CONFLICT).build();
-			}
+	public ResponseEntity<?> delete(@PathVariable Long id){
+		try {
+			cadastroEstadoService.deleteOrThrowsException(id);
+			return ResponseEntity.noContent().build();
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}catch(ResourceInUseException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
-		return ResponseEntity.notFound().build();
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,9 @@ public class CidadeRepositoryImpl implements CidadeRepository{
 
 	@Override
 	public Cidade findById(Long id) {
-		return manager.find(Cidade.class, id);
+		Cidade cidade = manager.find(Cidade.class, id);
+		checkIfResourceIsNull(cidade);
+		return cidade;
 	}
 
 	@Override
@@ -41,8 +44,9 @@ public class CidadeRepositoryImpl implements CidadeRepository{
 
 	@Override
 	public void checkIfResourceIsNull(Cidade resource) {
-		// TODO Auto-generated method stub
-		
+		if(resource == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
 	}
 
 }

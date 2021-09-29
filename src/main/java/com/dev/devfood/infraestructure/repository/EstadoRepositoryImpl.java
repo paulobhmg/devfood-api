@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,9 @@ public class EstadoRepositoryImpl implements EstadoRepository{
 
 	@Override
 	public Estado findById(Long id) {
-		return manager.find(Estado.class, id);
+		Estado estado = manager.find(Estado.class, id);
+		checkIfResourceIsNull(estado);
+		return estado;
 	}
 
 	@Override
@@ -40,8 +43,9 @@ public class EstadoRepositoryImpl implements EstadoRepository{
 	}
 
 	@Override
-	public void checkIfResourceIsNull(Estado resource) {
-		// TODO Auto-generated method stub
-		
+	public void checkIfResourceIsNull(Estado estado) {
+		if(estado == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
 	}
 }

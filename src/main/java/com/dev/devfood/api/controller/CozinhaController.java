@@ -27,27 +27,27 @@ import com.dev.devfood.domain.service.CadastroCozinhaService;
 public class CozinhaController {
 	
 	@Autowired
-	private CadastroCozinhaService service;
+	private CadastroCozinhaService cadastroCozinhaService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<CozinhaXmlWrapper> getXml() {
-		return ResponseEntity.ok(new CozinhaXmlWrapper(service.list()));
+		return ResponseEntity.ok(new CozinhaXmlWrapper(cadastroCozinhaService.list()));
 	}
 	
 	@PostMapping
 	public ResponseEntity<Cozinha> save(@RequestBody Cozinha cozinha){
-		return ResponseEntity.ok(service.save(cozinha));
+		return ResponseEntity.ok(cadastroCozinhaService.save(cozinha));
 	}
 	
 	@GetMapping()
 	public ResponseEntity<List<Cozinha>> list() {
-		return ResponseEntity.ok(service.list());
+		return ResponseEntity.ok(cadastroCozinhaService.list());
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable Long id) {
 		try {
-			return ResponseEntity.ok(service.findByIdOrThrowsResourceNotFoundException(id));
+			return ResponseEntity.ok(cadastroCozinhaService.findByIdOrThrowsResourceNotFoundException(id));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -55,10 +55,10 @@ public class CozinhaController {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Cozinha> update(@PathVariable Long id, @RequestBody Cozinha cozinha){
-		Cozinha cozinhaAtual = service.findByIdOrThrowsResourceNotFoundException(id);
+		Cozinha cozinhaAtual = cadastroCozinhaService.findByIdOrThrowsResourceNotFoundException(id);
 		if(cozinhaAtual != null) {
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			return ResponseEntity.ok(service.save(cozinhaAtual));
+			return ResponseEntity.ok(cadastroCozinhaService.save(cozinhaAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
@@ -66,7 +66,7 @@ public class CozinhaController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
-			service.deleteOrThrowsException(id);
+			cadastroCozinhaService.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
