@@ -27,7 +27,11 @@ public class CadastroCozinhaService {
 	}
 	
 	public Cozinha findByIdOrThrowsResourceNotFoundException(Long id){
-		return cozinhaRepository.findById(id);
+		try {
+			return cozinhaRepository.findById(id);
+		}catch(EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(String.format("Cozinha de código '%d' não encontrada.", id));
+		}
 	}
 
 	public void deleteOrThrowsException(Long id) {

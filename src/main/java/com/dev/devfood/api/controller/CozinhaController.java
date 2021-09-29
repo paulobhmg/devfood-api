@@ -29,25 +29,28 @@ public class CozinhaController {
 	@Autowired
 	private CadastroCozinhaService service;
 	
-	@GetMapping()
-	public ResponseEntity<List<Cozinha>> list() {
-		return ResponseEntity.ok(service.list());
-	}
-	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<CozinhaXmlWrapper> getXml() {
 		return ResponseEntity.ok(new CozinhaXmlWrapper(service.list()));
 	}
 	
-	@GetMapping("/{id}")
-	public ResponseEntity<Cozinha> findById(@PathVariable Long id) {
-		Cozinha cozinha = service.findByIdOrThrowsResourceNotFoundException(id);
-		return cozinha != null ? ResponseEntity.ok(cozinha) : ResponseEntity.notFound().build();
-	}
-	
 	@PostMapping
 	public ResponseEntity<Cozinha> save(@RequestBody Cozinha cozinha){
 		return ResponseEntity.ok(service.save(cozinha));
+	}
+	
+	@GetMapping()
+	public ResponseEntity<List<Cozinha>> list() {
+		return ResponseEntity.ok(service.list());
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<?> findById(@PathVariable Long id) {
+		try {
+			return ResponseEntity.ok(service.findByIdOrThrowsResourceNotFoundException(id));
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
 	}
 	
 	@PutMapping("/{id}")
@@ -61,16 +64,14 @@ public class CozinhaController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Cozinha> delete(@PathVariable Long id){
+	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
 			service.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
 		}catch(ResourceNotFoundException e) {
-			System.out.println(e.getMessage());
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}catch(ResourceInUseException e) {
-			System.out.println(e.getMessage());
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
 	}
 }

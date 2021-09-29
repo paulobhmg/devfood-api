@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,64 +17,66 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dev.devfood.api.model.RestauranteXmlWrapper;
+import com.dev.devfood.domain.exception.ResourceInUseException;
+import com.dev.devfood.domain.exception.ResourceNotFoundException;
 import com.dev.devfood.domain.model.Restaurante;
-import com.dev.devfood.domain.repository.RestauranteRepository;
+import com.dev.devfood.domain.service.CadastroRestauranteService;
 
 @RestController
 @RequestMapping("/restaurantes")
 public class RestauranteController {
 
 	@Autowired
-	private RestauranteRepository repository;
+	private CadastroRestauranteService service;
 	
-	@GetMapping
-	public ResponseEntity<List<Restaurante>> list(){
-		return ResponseEntity.ok(repository.list());
-	}
-
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<RestauranteXmlWrapper> getWrapper() {
-		return ResponseEntity.ok(new RestauranteXmlWrapper(repository.list()));
-	}
-		
-	@GetMapping("/{id}")
-	public ResponseEntity<Restaurante> findById(@PathVariable Long id) {
-		/* 
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.LOCATION, "http://api.devfood:8080/cozinhas");
-		
-			return ResponseEntity
-				.status(HttpStatus.MOVED_PERMANENTLY)
-				.headers(headers)
-				.build();
-		*/
-		
-		Restaurante restaurante = repository.findById(id);
-		return restaurante != null ? ResponseEntity.ok(restaurante) : ResponseEntity.notFound().build();
+		return ResponseEntity.ok(new RestauranteXmlWrapper(service.list()));
 	}
 	
 	@PostMapping
-	public ResponseEntity<Restaurante> save(@RequestBody Restaurante restaurante) {
-		return ResponseEntity.ok(repository.save(restaurante));
+	public ResponseEntity<?> save(@RequestBody Restaurante restaurante) {
+		try {
+			restaurante = service.save(restaurante);
+			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Restaurante>> list(){
+		return ResponseEntity.ok(service.list());
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<?> findById(@PathVariable Long id) {
+		try{
+			return ResponseEntity.ok(service.findByIdOrThrowsResourceNotFoundException(id));
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Restaurante> update(@PathVariable Long id, @RequestBody Restaurante restaurante){
-		Restaurante restauranteAtual = repository.findById(id);
+		Restaurante restauranteAtual = service.findByIdOrThrowsResourceNotFoundException(id);
 		if(restauranteAtual != null) {
 			BeanUtils.copyProperties(restaurante, restauranteAtual, "id", "cozinha");
-			return ResponseEntity.ok(repository.save(restauranteAtual));
+			return ResponseEntity.ok(service.save(restauranteAtual));
 		}
 		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<Restaurante> delete(@PathVariable Long id){
-		Restaurante restaurante = repository.findById(id);
-		if(restaurante != null) {
-			repository.delete(restaurante.getId());
+	public ResponseEntity<?> delete(@PathVariable Long id){
+		try {
+			service.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}catch(ResourceInUseException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		}
-		return ResponseEntity.notFound().build();
 	}
 }
