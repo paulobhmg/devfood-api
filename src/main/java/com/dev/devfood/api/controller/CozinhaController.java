@@ -54,13 +54,14 @@ public class CozinhaController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<Cozinha> update(@PathVariable Long id, @RequestBody Cozinha cozinha){
-		Cozinha cozinhaAtual = cadastroCozinhaService.findByIdOrThrowsResourceNotFoundException(id);
-		if(cozinhaAtual != null) {
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Cozinha cozinha){
+		try {
+			Cozinha cozinhaAtual = cadastroCozinhaService.findByIdOrThrowsResourceNotFoundException(id);
 			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
 			return ResponseEntity.ok(cadastroCozinhaService.save(cozinhaAtual));
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
-		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{id}")

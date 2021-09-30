@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.dev.devfood.domain.exception.ResourceInUseException;
 import com.dev.devfood.domain.exception.ResourceNotFoundException;
 import com.dev.devfood.domain.model.Cidade;
+import com.dev.devfood.domain.model.Estado;
 import com.dev.devfood.domain.repository.CidadeRepository;
 
 @Service
@@ -18,8 +19,16 @@ public class CadastroCidadeService {
 	@Autowired
 	private CidadeRepository cidadeRepository;
 	
+	@Autowired
+	private CadastroEstadoService cadastroEstadoService;
+	
 	public Cidade save(Cidade cidade) {
-		return null;
+		Estado estado = cadastroEstadoService.findByIdOrThrowsResourceNotFoundException(cidade.getEstado().getId());
+		try {
+			return cidadeRepository.save(cidade);
+		}catch(EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException(String.format("Estado de código '%d' não existe.", estado.getId()));
+		}
 	}
 	
 	public List<Cidade> list(){
