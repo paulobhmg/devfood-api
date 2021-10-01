@@ -1,6 +1,6 @@
 package com.dev.devfood.api.controller;
 
-import java.math.BigDecimal;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -24,6 +25,7 @@ import com.dev.devfood.domain.exception.ResourceInUseException;
 import com.dev.devfood.domain.exception.ResourceNotFoundException;
 import com.dev.devfood.domain.model.Restaurante;
 import com.dev.devfood.domain.service.CadastroRestauranteService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 @RequestMapping("/restaurantes")
@@ -74,10 +76,14 @@ public class RestauranteController {
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> partialUpdate(@PathVariable Long id, @RequestBody Map<String, Object> campos){
+	public ResponseEntity<?> partialUpdateWithPatch(@PathVariable Long id, @RequestBody Map<String, Object> campos){
+		try {
 			Restaurante restauranteAtual = cadastroRestauranteService.findByIdOrThrowsResourceNotFoundException(id);
 			merge(campos, restauranteAtual);
 			return update(id, restauranteAtual);
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
 	}
 
 	@DeleteMapping("/{id}")
@@ -92,14 +98,15 @@ public class RestauranteController {
 		}
 	}
 	
-	private void merge(Map<String, Object> campos, Restaurante restaurante) {
-		campos.forEach((nomeDaChave, valorDoCampo) -> {
-			if(nomeDaChave.equals("nome")) {
-				restaurante.setNome((String) valorDoCampo);
-			}
-			if(nomeDaChave.equals("taxaDeEntrega")) {
-				restaurante.setTaxaDeEntrega(new BigDecimal((double) valorDoCampo));
-			}
+	private void merge(Map<String, Object> propriedades, Restaurante restaurante) {
+		ObjectMapper mapper = new ObjectMapper();
+		Restaurante restauranteOrigem = mapper.convertValue(propriedades, Restaurante.class);
+		
+		propriedades.forEach((nomeDaPropriedade, valorDaPropriedade) -> {
+			Field field = ReflectionUtils.findField(Restaurante.class, nomeDaPropriedade);
+			field.setAccessible(true);
+			Object novoValor = ReflectionUtils.getField(field, restauranteOrigem);
+			ReflectionUtils.setField(field, restaurante, novoValor);
 		});
 	}
 }
