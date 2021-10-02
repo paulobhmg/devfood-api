@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,22 +20,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
+@JsonRootName("kitchen")
 @Entity
-@Table(name = "estados")
-public class Estado {
+@Table(name="kitchens")
+public class Kitchen {
 	
 	@Id @EqualsAndHashCode.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column
-	private String nome;
-	
-	@Column
-	private String sigla;
-
-	public Estado(String nome, String sigla) {
-		this.nome = nome;
-		this.sigla = sigla;
-	}
+	private String description;
 }

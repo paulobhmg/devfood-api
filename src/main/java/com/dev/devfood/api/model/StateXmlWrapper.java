@@ -2,7 +2,7 @@ package com.dev.devfood.api.model;
 
 import java.util.List;
 
-import com.dev.devfood.domain.model.Estado;
+import com.dev.devfood.domain.model.State;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -10,12 +10,12 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 import lombok.NonNull;
 
-@JacksonXmlRootElement(localName = "estados")
+@JacksonXmlRootElement(localName = "states")
 @Data
-public class EstadoXmlWrapper {
+public class StateXmlWrapper {
 	
 	@NonNull
 	@JacksonXmlElementWrapper(useWrapping = false)
-	@JacksonXmlProperty(localName = "estado")
-	private List<Estado> estados;
+	@JacksonXmlProperty(localName = "state")
+	private List<State> states;
 }

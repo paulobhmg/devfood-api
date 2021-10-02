@@ -16,55 +16,49 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dev.devfood.api.model.CidadeXmlWrapper;
+import com.dev.devfood.api.model.KitchenXmlWrapper;
 import com.dev.devfood.domain.exception.ResourceInUseException;
 import com.dev.devfood.domain.exception.ResourceNotFoundException;
-import com.dev.devfood.domain.model.Cidade;
-import com.dev.devfood.domain.service.CadastroCidadeService;
+import com.dev.devfood.domain.model.Kitchen;
+import com.dev.devfood.domain.service.KitchenRegistrationService;
 
 @RestController
-@RequestMapping("/cidades")
-public class CidadeController {
+@RequestMapping("/kitchens")
+public class KitchenController {
 	
 	@Autowired
-	private CadastroCidadeService cadastroCidadeService;
+	private KitchenRegistrationService kitchenRegistrationService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<CidadeXmlWrapper> getWrapper(){
-		return ResponseEntity.ok(new CidadeXmlWrapper(cadastroCidadeService.list()));
+	public ResponseEntity<KitchenXmlWrapper> getXml() {
+		return ResponseEntity.ok(new KitchenXmlWrapper(kitchenRegistrationService.list()));
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> save(@RequestBody Cidade cidade){
-		try {
-			cidade = cadastroCidadeService.save(cidade);
-			return ResponseEntity.status(HttpStatus.CREATED).body(cidade);
-		}catch(ResourceNotFoundException e) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-		}
+	public ResponseEntity<Kitchen> save(@RequestBody Kitchen kitchen){
+		return ResponseEntity.ok(kitchenRegistrationService.save(kitchen));
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<Cidade>> list() {
-		return ResponseEntity.ok(cadastroCidadeService.list());
+	@GetMapping()
+	public ResponseEntity<List<Kitchen>> list() {
+		return ResponseEntity.ok(kitchenRegistrationService.list());
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> findById(@PathVariable Long id){
+	public ResponseEntity<?> findById(@PathVariable Long id) {
 		try {
-			Cidade cidade = cadastroCidadeService.findByIdOrThrowsResourceNotFoundException(id);
-			return ResponseEntity.ok(cidade);
+			return ResponseEntity.ok(kitchenRegistrationService.findByIdOrThrowsResourceNotFoundException(id));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Cidade cidade){
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Kitchen kitchen){
 		try {
-			Cidade cidadeAtual = cadastroCidadeService.findByIdOrThrowsResourceNotFoundException(id);
-			BeanUtils.copyProperties(cidade, cidadeAtual, "id");
-			return ResponseEntity.ok(cadastroCidadeService.save(cidadeAtual));
+			Kitchen currentKitchen = kitchenRegistrationService.findByIdOrThrowsResourceNotFoundException(id);
+			BeanUtils.copyProperties(kitchen, currentKitchen, "id");
+			return ResponseEntity.ok(kitchenRegistrationService.save(currentKitchen));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -73,7 +67,7 @@ public class CidadeController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
-			cadastroCidadeService.deleteOrThrowsException(id);
+			kitchenRegistrationService.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

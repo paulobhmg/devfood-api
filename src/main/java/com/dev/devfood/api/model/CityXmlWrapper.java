@@ -2,7 +2,7 @@ package com.dev.devfood.api.model;
 
 import java.util.List;
 
-import com.dev.devfood.domain.model.Restaurante;
+import com.dev.devfood.domain.model.City;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
@@ -10,12 +10,12 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import lombok.Data;
 import lombok.NonNull;
 
-@JacksonXmlRootElement(localName = "restaurantes")
+@JacksonXmlRootElement(localName = "cities")
 @Data
-public class RestauranteXmlWrapper {
+public class CityXmlWrapper {
 	
 	@NonNull
+	@JacksonXmlProperty(localName = "city")
 	@JacksonXmlElementWrapper(useWrapping = false)
-	@JacksonXmlProperty(localName = "restaurante")
-	private List<Restaurante> restaurantes;
+	private List<City> cities;
 }

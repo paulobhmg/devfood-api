@@ -1,14 +1,13 @@
 package com.dev.devfood.domain.model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonRootName;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,24 +21,22 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @Entity
-@Table(name = "restaurantes")
-public class Restaurante {
+@JsonRootName("state")
+@Table(name = "states")
+public class State {
 	
 	@Id @EqualsAndHashCode.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column
-	private String nome;
+	private String name;
 	
-	@Column(name = "taxa_de_entrega")
-	private BigDecimal taxaDeEntrega;
-	
-	@ManyToOne
-	private Cozinha cozinha;
+	@Column
+	private String sigle;
 
-	public Restaurante(String nome, BigDecimal taxaDeEntrega) {
-		this.nome = nome;
-		this.taxaDeEntrega = taxaDeEntrega;
+	public State(String name, String sigle) {
+		this.name = name;
+		this.sigle = sigle;
 	}
 }

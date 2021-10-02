@@ -20,25 +20,25 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @Entity
-@Table(name = "cidades")
-public class Cidade {
+@Table(name = "cities")
+public class City {
 	
 	@Id @EqualsAndHashCode.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column
-	private String nome;
+	private String name;
 	
 	@ManyToOne
-	private Estado estado;
+	private State state;
 
-	public Cidade(String nome) {
-		this.nome = nome;
+	public City(String name) {
+		this.name = name;
 	}
 	
-//	public Cidade(String nome, Estado estado) {
+//	public city(String nome, state state) {
 //		this(nome);
-//		this.estado = estado;
+//		this.state = state;
 //	}
 }

@@ -1,13 +1,14 @@
 package com.dev.devfood.domain.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonRootName;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,15 +21,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
-@JsonRootName("cozinha")
 @Entity
-@Table(name="cozinhas")
-public class Cozinha {
+@Table(name = "restaurants")
+public class Restaurant {
 	
 	@Id @EqualsAndHashCode.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column
-	private String descricao;
+	private String name;
+	
+	@Column(name = "delivery_rate")
+	private BigDecimal deliveryRate;
+	
+	@ManyToOne
+	private Kitchen kitchen;
+
+	public Restaurant(String name, BigDecimal deliveryRate) {
+		this.name = name;
+		this.deliveryRate = deliveryRate;
+	}
 }

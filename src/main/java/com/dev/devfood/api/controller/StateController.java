@@ -16,49 +16,49 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dev.devfood.api.model.CozinhaXmlWrapper;
+import com.dev.devfood.api.model.StateXmlWrapper;
 import com.dev.devfood.domain.exception.ResourceInUseException;
 import com.dev.devfood.domain.exception.ResourceNotFoundException;
-import com.dev.devfood.domain.model.Cozinha;
-import com.dev.devfood.domain.service.CadastroCozinhaService;
+import com.dev.devfood.domain.model.State;
+import com.dev.devfood.domain.service.StateRegistrationService;
 
 @RestController
-@RequestMapping("/cozinhas")
-public class CozinhaController {
+@RequestMapping("/states")
+public class StateController {
 	
 	@Autowired
-	private CadastroCozinhaService cadastroCozinhaService;
+	private StateRegistrationService stateRegistrationService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<CozinhaXmlWrapper> getXml() {
-		return ResponseEntity.ok(new CozinhaXmlWrapper(cadastroCozinhaService.list()));
+	public ResponseEntity<StateXmlWrapper> getWrapper() {
+		return ResponseEntity.ok(new StateXmlWrapper(stateRegistrationService.list()));
 	}
 	
 	@PostMapping
-	public ResponseEntity<Cozinha> save(@RequestBody Cozinha cozinha){
-		return ResponseEntity.ok(cadastroCozinhaService.save(cozinha));
+	public ResponseEntity<State> save(@RequestBody State state){
+		return ResponseEntity.ok(stateRegistrationService.save(state));
 	}
 	
-	@GetMapping()
-	public ResponseEntity<List<Cozinha>> list() {
-		return ResponseEntity.ok(cadastroCozinhaService.list());
+	@GetMapping
+	public ResponseEntity<List<State>> list(){
+		return ResponseEntity.ok(stateRegistrationService.list());		
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable Long id) {
 		try {
-			return ResponseEntity.ok(cadastroCozinhaService.findByIdOrThrowsResourceNotFoundException(id));
+			return ResponseEntity.ok(stateRegistrationService.findByIdOrThrowsResourceNotFoundException(id));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Cozinha cozinha){
-		try {
-			Cozinha cozinhaAtual = cadastroCozinhaService.findByIdOrThrowsResourceNotFoundException(id);
-			BeanUtils.copyProperties(cozinha, cozinhaAtual, "id");
-			return ResponseEntity.ok(cadastroCozinhaService.save(cozinhaAtual));
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody State state){
+		try{
+			State currentState = stateRegistrationService.findByIdOrThrowsResourceNotFoundException(id);
+			BeanUtils.copyProperties(state, currentState, "id");
+			return ResponseEntity.ok(stateRegistrationService.save(currentState));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -67,7 +67,7 @@ public class CozinhaController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
-			cadastroCozinhaService.deleteOrThrowsException(id);
+			stateRegistrationService.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

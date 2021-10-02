@@ -20,30 +20,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dev.devfood.api.model.RestauranteXmlWrapper;
+import com.dev.devfood.api.model.RestaurantXmlWrapper;
 import com.dev.devfood.domain.exception.ResourceInUseException;
 import com.dev.devfood.domain.exception.ResourceNotFoundException;
-import com.dev.devfood.domain.model.Restaurante;
-import com.dev.devfood.domain.service.CadastroRestauranteService;
+import com.dev.devfood.domain.model.Restaurant;
+import com.dev.devfood.domain.service.RestaurantRegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
-@RequestMapping("/restaurantes")
-public class RestauranteController {
+@RequestMapping("/resturants")
+public class RestaurantController {
 
 	@Autowired
-	private CadastroRestauranteService cadastroRestauranteService;
+	private RestaurantRegistrationService restaurantRegistrationService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<RestauranteXmlWrapper> getWrapper() {
-		return ResponseEntity.ok(new RestauranteXmlWrapper(cadastroRestauranteService.list()));
+	public ResponseEntity<RestaurantXmlWrapper> getWrapper() {
+		return ResponseEntity.ok(new RestaurantXmlWrapper(restaurantRegistrationService.list()));
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> save(@RequestBody Restaurante restaurante) {
+	public ResponseEntity<?> save(@RequestBody Restaurant restaurant) {
 		try {
-			restaurante = cadastroRestauranteService.save(restaurante);
-			return ResponseEntity.status(HttpStatus.CREATED).body(restaurante);
+			restaurant = restaurantRegistrationService.save(restaurant);
+			return ResponseEntity.status(HttpStatus.CREATED).body(restaurant);
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
@@ -51,36 +51,36 @@ public class RestauranteController {
 	
 	
 	@GetMapping
-	public ResponseEntity<List<Restaurante>> list(){
-		return ResponseEntity.ok(cadastroRestauranteService.list());
+	public ResponseEntity<List<Restaurant>> list(){
+		return ResponseEntity.ok(restaurantRegistrationService.list());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> findById(@PathVariable Long id) {
 		try{
-			return ResponseEntity.ok(cadastroRestauranteService.findByIdOrThrowsResourceNotFoundException(id));
+			return ResponseEntity.ok(restaurantRegistrationService.findByIdOrThrowsResourceNotFoundException(id));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurante restaurante){
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Restaurant restaurant){
 		try {
-			Restaurante restauranteAtual = cadastroRestauranteService.findByIdOrThrowsResourceNotFoundException(id);
-			BeanUtils.copyProperties(restaurante, restauranteAtual, "id");
-			return ResponseEntity.ok(cadastroRestauranteService.save(restauranteAtual));
+			Restaurant currentRestaurant = restaurantRegistrationService.findByIdOrThrowsResourceNotFoundException(id);
+			BeanUtils.copyProperties(restaurant, currentRestaurant, "id");
+			return ResponseEntity.ok(restaurantRegistrationService.save(currentRestaurant));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 	
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> partialUpdateWithPatch(@PathVariable Long id, @RequestBody Map<String, Object> campos){
+	public ResponseEntity<?> partialUpdateWithPatch(@PathVariable Long id, @RequestBody Map<String, Object> fields){
 		try {
-			Restaurante restauranteAtual = cadastroRestauranteService.findByIdOrThrowsResourceNotFoundException(id);
-			merge(campos, restauranteAtual);
-			return update(id, restauranteAtual);
+			Restaurant currentRestaurant = restaurantRegistrationService.findByIdOrThrowsResourceNotFoundException(id);
+			merge(fields, currentRestaurant);
+			return update(id, currentRestaurant);
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -89,7 +89,7 @@ public class RestauranteController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
-			cadastroRestauranteService.deleteOrThrowsException(id);
+			restaurantRegistrationService.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -98,15 +98,15 @@ public class RestauranteController {
 		}
 	}
 	
-	private void merge(Map<String, Object> propriedades, Restaurante restaurante) {
+	private void merge(Map<String, Object> properties, Restaurant restaurant) {
 		ObjectMapper mapper = new ObjectMapper();
-		Restaurante restauranteOrigem = mapper.convertValue(propriedades, Restaurante.class);
+		Restaurant restaurantOrigin = mapper.convertValue(properties, Restaurant.class);
 		
-		propriedades.forEach((nomeDaPropriedade, valorDaPropriedade) -> {
-			Field field = ReflectionUtils.findField(Restaurante.class, nomeDaPropriedade);
+		properties.forEach((propertyName, propertyValue) -> {
+			Field field = ReflectionUtils.findField(Restaurant.class, propertyName);
 			field.setAccessible(true);
-			Object novoValor = ReflectionUtils.getField(field, restauranteOrigem);
-			ReflectionUtils.setField(field, restaurante, novoValor);
+			Object newValue = ReflectionUtils.getField(field, restaurantOrigin);
+			ReflectionUtils.setField(field, restaurant, newValue);
 		});
 	}
 }

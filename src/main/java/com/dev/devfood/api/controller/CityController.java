@@ -16,49 +16,55 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dev.devfood.api.model.EstadoXmlWrapper;
+import com.dev.devfood.api.model.CityXmlWrapper;
 import com.dev.devfood.domain.exception.ResourceInUseException;
 import com.dev.devfood.domain.exception.ResourceNotFoundException;
-import com.dev.devfood.domain.model.Estado;
-import com.dev.devfood.domain.service.CadastroEstadoService;
+import com.dev.devfood.domain.model.City;
+import com.dev.devfood.domain.service.CityRegistrationService;
 
 @RestController
-@RequestMapping("/estados")
-public class EstadoController {
+@RequestMapping("/cities")
+public class CityController {
 	
 	@Autowired
-	private CadastroEstadoService cadastroEstadoService;
+	private CityRegistrationService cityRegistrationService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<EstadoXmlWrapper> getWrapper() {
-		return ResponseEntity.ok(new EstadoXmlWrapper(cadastroEstadoService.list()));
+	public ResponseEntity<CityXmlWrapper> getWrapper(){
+		return ResponseEntity.ok(new CityXmlWrapper(cityRegistrationService.list()));
 	}
 	
 	@PostMapping
-	public ResponseEntity<Estado> save(@RequestBody Estado estado){
-		return ResponseEntity.ok(cadastroEstadoService.save(estado));
+	public ResponseEntity<?> save(@RequestBody City city){
+		try {
+			city = cityRegistrationService.save(city);
+			return ResponseEntity.status(HttpStatus.CREATED).body(city);
+		}catch(ResourceNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<Estado>> list(){
-		return ResponseEntity.ok(cadastroEstadoService.list());		
+	public ResponseEntity<List<City>> list() {
+		return ResponseEntity.ok(cityRegistrationService.list());
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<?> findById(@PathVariable Long id) {
+	public ResponseEntity<?> findById(@PathVariable Long id){
 		try {
-			return ResponseEntity.ok(cadastroEstadoService.findByIdOrThrowsResourceNotFoundException(id));
+			City city = cityRegistrationService.findByIdOrThrowsResourceNotFoundException(id);
+			return ResponseEntity.ok(city);
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Estado estado){
-		try{
-			Estado estadoAtual = cadastroEstadoService.findByIdOrThrowsResourceNotFoundException(id);
-			BeanUtils.copyProperties(estado, estadoAtual, "id");
-			return ResponseEntity.ok(cadastroEstadoService.save(estadoAtual));
+	public ResponseEntity<?> update(@PathVariable Long id, @RequestBody City city){
+		try {
+			City currentCity = cityRegistrationService.findByIdOrThrowsResourceNotFoundException(id);
+			BeanUtils.copyProperties(city, currentCity, "id");
+			return ResponseEntity.ok(cityRegistrationService.save(currentCity));
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
 		}
@@ -67,7 +73,7 @@ public class EstadoController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
-			cadastroEstadoService.deleteOrThrowsException(id);
+			cityRegistrationService.deleteOrThrowsException(id);
 			return ResponseEntity.noContent().build();
 		}catch(ResourceNotFoundException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
